@@ -422,7 +422,32 @@ function rotateMatrix(matrix) {
  */
 function sortByAsc(arr) {
   const sortArr = arr;
-  const sortFunction = (arr2, )
+  const sortFunction = (arr2, leftItem = 0, rightItem = arr2.length - 1) => {
+    if (leftItem >= rightItem) return;
+
+    const middleItem = arr2[Math.floor((leftItem + rightItem) / 2)];
+
+    let i = leftItem;
+    let j = rightItem;
+
+    while (i <= j) {
+      while (arr2[i] < middleItem) i += 1;
+      while (arr2[j] > middleItem) j -= 1;
+
+      if (i <= j) {
+        [sortArr[i], sortArr[j]] = [arr2[j], arr2[i]];
+        i += 1;
+        j -= 1;
+      }
+    }
+
+    if (leftItem < j) sortFunction(arr2, leftItem, j);
+    if (i < rightItem) sortFunction(arr2, i, rightItem);
+  };
+
+  sortFunction(sortArr);
+
+  return sortArr;
 }
 
 /**
@@ -442,8 +467,26 @@ function sortByAsc(arr) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
-  throw new Error('Not implemented');
+function shuffleChar(str, iterations) {
+  if (str.length === 0 || iterations <= 0) return str;
+
+  let result = str;
+
+  for (let i = 0; i < iterations; i += 1) {
+    let evenChars = '';
+    let oddChars = '';
+
+    for (let j = 0; j < result.length; j += 1) {
+      if (j % 2 === 0) evenChars += result[j];
+      else oddChars += result[j];
+    }
+
+    result = evenChars + oddChars;
+
+    if (result === str) return shuffleChar(str, iterations % (i + 1));
+  }
+
+  return result;
 }
 
 /**
@@ -463,8 +506,53 @@ function shuffleChar(/* str, iterations */) {
  * @param {number} number The source number
  * @returns {number} The nearest larger number, or original number if none exists.
  */
-function getNearestBigger(/* number */) {
-  throw new Error('Not implemented');
+function getNearestBigger(number) {
+  if (number < 10) return number;
+
+  const digitsArr = [];
+  let num = number;
+
+  while (num > 0) {
+    digitsArr.unshift(num % 10);
+    num = Math.floor(num / 10);
+  }
+
+  let pivotIndex = digitsArr.length - 2;
+  while (
+    pivotIndex >= 0 &&
+    digitsArr[pivotIndex] >= digitsArr[pivotIndex + 1]
+  ) {
+    pivotIndex -= 1;
+  }
+
+  if (pivotIndex < 0) return number;
+
+  let swapIndex = digitsArr.length - 1;
+  while (digitsArr[swapIndex] <= digitsArr[pivotIndex]) {
+    swapIndex -= 1;
+  }
+
+  let temp = digitsArr[pivotIndex];
+  digitsArr[pivotIndex] = digitsArr[swapIndex];
+  digitsArr[swapIndex] = temp;
+
+  let left = pivotIndex + 1;
+  let right = digitsArr.length - 1;
+  while (left < right) {
+    temp = digitsArr[left];
+    digitsArr[left] = digitsArr[right];
+    digitsArr[right] = temp;
+
+    left += 1;
+    right -= 1;
+  }
+
+  let result = 0;
+  for (let k = 0; k < digitsArr.length; k += 1) {
+    result = result * 10 + digitsArr[k];
+  }
+
+  return result;
 }
 
 module.exports = {
